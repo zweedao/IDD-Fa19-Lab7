@@ -24,7 +24,9 @@ function ledOFF() {
 function makePicture(){
   socket.emit('makePicture');
 }
-
+socket.on('newPicture', function(msg) {
+  document.getElementById('pictureContainer').src=msg;
+});
 // read the data from the message that the server sent and change the
 // background of the webpage based on the data in the message
 socket.on('server-msg', function(msg) {

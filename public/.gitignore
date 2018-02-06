@@ -1,5 +1,5 @@
 # Pictures We remove any picture files. For security and privacy purposes
-.jpg
-.png
-.tiff
-.bmp
+*.jpg
+*.png
+*.tiff
+*.bmp

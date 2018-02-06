@@ -108,10 +108,10 @@ io.on('connect', function(socket) {
     serial.write('L');
   });
   socket.on('makePicture', function() {
-    var address = 'public/'+new Date().toString().replace(/[&\/\\#,+()$~%.'":*?<>{}\s-]/g, '');
+    var address = new Date().toString().replace(/[&\/\\#,+()$~%.'":*?<>{}\s-]/g, '');
     console.log('making a making a picture at'+ address);
-    NodeWebcam.capture( address, opts, function( err, data ) {
-
+    NodeWebcam.capture('public/'+address, opts, function( err, data ) {
+      io.emit('newPicture',(address+'.jpg'));
     //var image = "<img src='" + data + "'>";
     //console.log(image);
 });
