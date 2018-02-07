@@ -21,9 +21,14 @@ function ledON() {
 function ledOFF() {
   socket.emit('ledOFF');
 }
-function makePicture(){
-  socket.emit('makePicture');
+
+//--addition forward the take a picture command to the web server.
+function takePicture(){
+  socket.emit('takePicture');
 }
+
+//--addition in this function we received the new image name and apply it to html element.
+
 socket.on('newPicture', function(msg) {
   document.getElementById('pictureContainer').src=msg;
 });

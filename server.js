@@ -107,13 +107,17 @@ io.on('connect', function(socket) {
     console.log('ledOFF');
     serial.write('L');
   });
-  socket.on('makePicture', function() {
+
+  //-- addition this function is called when the client clicks on thr take a picture button 
+  socket.on('takePicture', function() {
+    /// First, we create a name for the new picture.
+    /// the .replace() function removes all special characters from the name
     var address = new Date().toString().replace(/[&\/\\#,+()$~%.'":*?<>{}\s-]/g, '');
-    console.log('making a making a picture at'+ address);
+    console.log('making a making a picture at'+ address); // Secondly, this logs the name to the console.
+
+    //In the third step the picture is actually taken  and saved to the public/ folder
     NodeWebcam.capture('public/'+address, opts, function( err, data ) {
-      io.emit('newPicture',(address+'.jpg'));
-    //var image = "<img src='" + data + "'>";
-    //console.log(image);
+    io.emit('newPicture',(address+'.jpg')); ///Lasylty the new name is send to the client
 });
   //  serial.write('L');
   });
