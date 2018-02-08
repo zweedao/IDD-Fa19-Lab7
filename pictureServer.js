@@ -1,20 +1,20 @@
-
 /*
 server.js
 
 Authors:David Goedicke (da.goedicke@gmail.com) & Nikolas Martelaro (nmartelaro@gmail.com)
 
-This code is heavily based on Nikolas Martelaros interaction-engine codehence his Authorship).
+This code is heavily based on Nikolas Martelaroes interaction-engine code (hence his authorship).
 The  original purpose was:
-This is the server that runs the web applicaiton and the serial
-communication with the microcontroller. Messaging to the microcontroller is done
+This is the server that runs the web application and the serial
+communication with the micro controller. Messaging to the micro controller is done
 using serial. Messaging to the webapp is done using WebSocket.
 
-This was extended by adding webcame functionality that takes immages remotly.
+//-- Additions:
+This was extended by adding webcam functionality that takes images remotely.
 
 Usage: node server.js SERIAL_PORT (Ex: node server.js /dev/ttyUSB0)
 
-Notes: You will need to specify what port you would like the web app to be
+Notes: You will need to specify what port you would like the webapp to be
 served from. You will also need to include the serial port address as a command
 line input.
 */
@@ -26,14 +26,14 @@ var io = require('socket.io')(http); // connect websocket library to server
 var serverPort = 8000;
 var SerialPort = require('serialport'); // serial library
 var Readline = SerialPort.parsers.Readline; // read serial data as lines
-//-- Additions
-var NodeWebcam = require( "node-webcam" );
+//-- Addition:
+var NodeWebcam = require( "node-webcam" );// load the webcam module
 
 //---------------------- WEBAPP SERVER SETUP ---------------------------------//
 // use express to create the simple webapp
 app.use(express.static('public')); // find pages in public directory
 
-// check to make sure that the user provides the serial port for the arduino
+// check to make sure that the user provides the serial port for the Arduino
 // when running the server
 if (!process.argv[2]) {
   console.error('Usage: node ' + process.argv[1] + ' SERIAL_PORT');
@@ -44,12 +44,14 @@ if (!process.argv[2]) {
 http.listen(serverPort, function() {
   console.log('listening on *:%s', serverPort);
 });
-//--Additions
-//Default options
+//----------------------------------------------------------------------------//
 
-var opts = { //These Options define how the webcame is opperated.
+//--Additions:
+//----------------------------WEBCAM SETUP------------------------------------//
+//Default options
+var opts = { //These Options define how the webcam is operated.
     //Picture related
-    width: 1280,
+    width: 1280, //size
     height: 720,
     quality: 100,
     //Delay to take shot
@@ -70,11 +72,11 @@ var opts = { //These Options define how the webcame is opperated.
     verbose: false
 };
 var Webcam = NodeWebcam.create( opts ); //starting up the webcam
-
 //----------------------------------------------------------------------------//
 
 
-//---------------------- SERIAL COMMUNICATION --------------------------------//
+
+//---------------------- SERIAL COMMUNICATION (Arduino) ----------------------//
 // start the serial port connection and read on newlines
 const serial = new SerialPort(process.argv[2], {});
 const parser = new Readline({
@@ -90,36 +92,39 @@ parser.on('data', function(data) {
 //----------------------------------------------------------------------------//
 
 
-//---------------------- WEBSOCKET COMMUNICATION -----------------------------//
+//---------------------- WEBSOCKET COMMUNICATION (web browser)----------------//
 // this is the websocket event handler and say if someone connects
 // as long as someone is connected, listen for messages
 io.on('connect', function(socket) {
   console.log('a user connected');
 
-  // if you get the 'ledON' msg, send an 'H' to the arduino
+  // if you get the 'ledON' msg, send an 'H' to the Arduino
   socket.on('ledON', function() {
     console.log('ledON');
     serial.write('H');
   });
 
-  // if you get the 'ledOFF' msg, send an 'H' to the arduino
+  // if you get the 'ledOFF' msg, send an 'L' to the Arduino
   socket.on('ledOFF', function() {
     console.log('ledOFF');
     serial.write('L');
   });
 
-  //-- addition this function is called when the client clicks on thr take a picture button 
+  //-- Addition: This function is called when the client clicks on the `Take a picture` button.
   socket.on('takePicture', function() {
     /// First, we create a name for the new picture.
-    /// the .replace() function removes all special characters from the name
-    var address = new Date().toString().replace(/[&\/\\#,+()$~%.'":*?<>{}\s-]/g, '');
-    console.log('making a making a picture at'+ address); // Secondly, this logs the name to the console.
+    /// The .replace() function removes all special characters from the date.
+    /// This way we can use it as the filename.
+    var imageName = new Date().toString().replace(/[&\/\\#,+()$~%.'":*?<>{}\s-]/g, '');
 
-    //In the third step the picture is actually taken  and saved to the public/ folder
-    NodeWebcam.capture('public/'+address, opts, function( err, data ) {
-    io.emit('newPicture',(address+'.jpg')); ///Lasylty the new name is send to the client
-});
-  //  serial.write('L');
+    console.log('making a making a picture at'+ imageName); // Second, the name is logged to the console.
+
+    //Third, the picture is  taken and saved to the `public/`` folder
+    NodeWebcam.capture('public/'+imageName, opts, function( err, data ) {
+    io.emit('newPicture',(imageName+'.jpg')); ///Lastly, the new name is send to the client web browser.
+    /// The browser will take this new name and load the picture from the public folder.
+  });
+
   });
   // if you get the 'disconnect' message, say the user disconnected
   socket.on('disconnect', function() {

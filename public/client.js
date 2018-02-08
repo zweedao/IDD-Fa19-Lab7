@@ -2,11 +2,13 @@
 client.js
 
 Author: Nikolas Martelaro (nmartelaro@gmail.com)
-
+Extended: David Goeicke (da.goedicke@gmail.com)
 Purpose: This run the interactivity and communication for the web app. This file
 is served to the users web browser and executes on the browser.
 
 Usage: This file is called automatically when the webpage is served.
+
+//--Addition. Added a button handling for the `Take a picture` button.
 */
 
 // WebSocket connection setup
@@ -22,12 +24,12 @@ function ledOFF() {
   socket.emit('ledOFF');
 }
 
-//--addition forward the take a picture command to the web server.
+//-- Addition: Forward the `Take a picture` button-press to the webserver.
 function takePicture(){
   socket.emit('takePicture');
 }
 
-//--addition in this function we received the new image name and apply it to html element.
+//-- Addition: This function receives the new image name and applies it to html element.
 
 socket.on('newPicture', function(msg) {
   document.getElementById('pictureContainer').src=msg;
@@ -47,7 +49,7 @@ socket.on('server-msg', function(msg) {
       console.log("black");
       break;
     default:
-      //console.log("somthing else");
+      //console.log("something else");
       break;
   }
 });
