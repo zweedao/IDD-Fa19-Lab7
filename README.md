@@ -1,6 +1,6 @@
 # Video Doorbell, Lab 7
 
-*A lab report by John Q. Student*
+*A lab report by Zwee Dao*
 
 ### In This Report
 
@@ -15,6 +15,32 @@
 ## Part B. Web Camera
 
 **a. Compare `helloYou/server.js` and `IDD-Fa18-Lab7/pictureServer.js`. What elements had to be added or changed to enable the web camera? (Hint: It might be good to know that there is a UNIX command called `diff` that compares files.)**
+
+I edit the `SERIAL COMMUNICATION (Arduino)` part to be like below:
+
+```javascript
+//---------------------- SERIAL COMMUNICATION (Arduino) ----------------------//
+// start the serial port connection and read on newlines
+const serial = new SerialPort(process.argv[2], {});
+const parser = new Readline({
+  delimiter: '\r\n'
+});
+
+// Read data that is available on the serial port and send it to the websocket
+serial.pipe(parser);
+parser.on('data', function(data) {
+  console.log('Data:', data);
+  io.emit('server-msg', data);
+  if (data == 'light') {
+    var imageName = new Date().toString().replace(/[&\/\\#,+()$~%.'":*?<>{}\s-]/g, '');
+    console.log('making a making a picture at'+ imageName);
+    NodeWebcam.capture('public/'+imageName, opts, function( err, data ) {
+      io.emit('newPicture',(imageName+'.jpg'));
+    })
+  }
+});
+//----------------------------------------------------------------------------//
+```
 
 **b. Include a video of your working video doorbell**
 
