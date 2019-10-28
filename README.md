@@ -44,6 +44,8 @@ parser.on('data', function(data) {
 
 **b. Include a video of your working video doorbell**
 
+[Video doorbell video](/video_bell.MOV)
+
 ## Part C. Make it your own
 
 **a. Find, install, and try out a node-based library and try to incorporate into your lab. Document your successes and failures (totally okay!) for your writeup. This will help others in class figure out cool new tools and capabilities.**
